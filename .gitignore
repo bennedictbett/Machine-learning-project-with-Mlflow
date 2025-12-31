@@ -134,8 +134,10 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# Environments - CRITICAL: Never commit credentials!
 .env
+.env.local
+.env.*.local
 .envrc
 .venv
 env/
@@ -186,7 +188,7 @@ cython_debug/
 #  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
 #  and can be added to the global gitignore or merged into this file. However, if you prefer, 
 #  you could uncomment the following to ignore the entire vscode folder
-# .vscode/
+.vscode/
 
 # Ruff stuff:
 .ruff_cache/
@@ -205,3 +207,81 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ==============================================================================
+# ML PROJECT SPECIFIC
+# ==============================================================================
+
+# Artifacts - Generated models, data, and outputs
+artifacts/
+mlruns/
+outputs/
+
+# Logs
+logs/
+*.log
+
+# Data files - Large datasets should not be in git
+data/
+*.csv
+*.xlsx
+*.xls
+*.json
+*.parquet
+*.feather
+!config/*.yaml
+!config/*.json
+
+# Model files - Usually too large for git
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.pb
+*.pth
+*.onnx
+*.pt
+*.safetensors
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# DVC - Data Version Control
+.dvc/
+*.dvc
+
+# DagsHub
+.dagshub/
+
+# Weights & Biases
+wandb/
+
+# TensorBoard
+runs/
+tensorboard/
+
+# AWS credentials
+.aws/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
