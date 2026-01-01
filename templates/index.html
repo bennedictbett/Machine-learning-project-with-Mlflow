@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Quality Prediction | ML Project</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background circles */
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        body::before {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        body::after {
+            width: 400px;
+            height: 400px;
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(180deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            max-width: 1000px;
+            width: 100%;
+            padding: 50px;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .wine-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+            display: inline-block;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+            font-weight: 300;
+        }
+
+        .header .subtitle {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .form-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .form-group label {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label::before {
+            content: '🔬';
+            font-size: 1.2em;
+        }
+
+        .form-group input {
+            padding: 15px 18px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input:hover {
+            border-color: #764ba2;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 18px 45px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-predict {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-predict:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-reset, .btn-sample {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-reset:hover, .btn-sample:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.4);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .loading.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .result-container {
+            margin-top: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .result-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            padding: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-container h2 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .quality-score {
+            font-size: 5.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 30px 0;
+            animation: scaleIn 0.5s ease;
+            position: relative;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .quality-label {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        #qualityDescription {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: white;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-section {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 3px solid #e8e8e8;
+        }
+
+        .info-section h3 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .info-section p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+
+        .feature-description {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 5px solid #667eea;
+        }
+
+        .feature-description h3 {
+            margin-bottom: 25px;
+        }
+
+        .feature-description ul {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-description li {
+            padding: 12px;
+            color: #555;
+            background: white;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .feature-description li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .feature-description li::before {
+            content: "🍷";
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+
+        .feature-description strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .wine-icon {
+                font-size: 3em;
+            }
+
+            .form-container {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .quality-score {
+                font-size: 4em;
+            }
+
+            .feature-description ul {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="wine-icon">🍷</div>
+            <h1>Wine Quality Prediction</h1>
+            <p>Advanced ML-powered wine quality analysis</p>
+            <span class="subtitle">ElasticNet Regression Model</span>
+        </div>
+
+        <form id="predictionForm">
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="fixed_acidity">Fixed Acidity</label>
+                    <input type="number" id="fixed_acidity" name="fixed_acidity" step="0.1" required 
+                           placeholder="e.g., 7.4" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="volatile_acidity">Volatile Acidity</label>
+                    <input type="number" id="volatile_acidity" name="volatile_acidity" step="0.01" required 
+                           placeholder="e.g., 0.70" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="citric_acid">Citric Acid</label>
+                    <input type="number" id="citric_acid" name="citric_acid" step="0.01" required 
+                           placeholder="e.g., 0.00" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="residual_sugar">Residual Sugar</label>
+                    <input type="number" id="residual_sugar" name="residual_sugar" step="0.1" required 
+                           placeholder="e.g., 1.9" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="chlorides">Chlorides</label>
+                    <input type="number" id="chlorides" name="chlorides" step="0.001" required 
+                           placeholder="e.g., 0.076" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="free_sulfur_dioxide">Free Sulfur Dioxide</label>
+                    <input type="number" id="free_sulfur_dioxide" name="free_sulfur_dioxide" step="1" required 
+                           placeholder="e.g., 11" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="total_sulfur_dioxide">Total Sulfur Dioxide</label>
+                    <input type="number" id="total_sulfur_dioxide" name="total_sulfur_dioxide" step="1" required 
+                           placeholder="e.g., 34" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="density">Density</label>
+                    <input type="number" id="density" name="density" step="0.0001" required 
+                           placeholder="e.g., 0.9978" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="pH">pH Level</label>
+                    <input type="number" id="pH" name="pH" step="0.01" required 
+                           placeholder="e.g., 3.51" min="0" max="14">
+                </div>
+
+                <div class="form-group">
+                    <label for="sulphates">Sulphates</label>
+                    <input type="number" id="sulphates" name="sulphates" step="0.01" required 
+                           placeholder="e.g., 0.56" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="alcohol">Alcohol Content</label>
+                    <input type="number" id="alcohol" name="alcohol" step="0.1" required 
+                           placeholder="e.g., 9.4 %" min="0">
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button type="submit" class="btn btn-predict">🔮 Predict Quality</button>
+                <button type="button" class="btn btn-sample" onclick="fillSampleValues()">📝 Fill Sample</button>
+                <button type="reset" class="btn btn-reset">🔄 Reset Form</button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>🔬 Analyzing wine characteristics...</p>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <h2>🎯 Predicted Wine Quality</h2>
+            <div class="quality-score" id="qualityScore">-</div>
+            <div class="quality-label">Out of 10</div>
+            <p id="qualityDescription"></p>
+        </div>
+
+        <div class="info-section">
+            <h3>📊 About This Tool</h3>
+            <p>This machine learning model predicts wine quality based on 11 physicochemical properties. 
+               The model was trained using ElasticNet regression on a comprehensive dataset of red wines, 
+               achieving high accuracy through advanced regularization techniques.</p>
+
+            <div class="feature-description">
+                <h3>🧪 Feature Descriptions</h3>
+                <ul>
+                    <li><strong>Fixed Acidity:</strong> Most acids involved with wine (g/dm³)</li>
+                    <li><strong>Volatile Acidity:</strong> Amount of acetic acid in wine (g/dm³)</li>
+                    <li><strong>Citric Acid:</strong> Adds freshness and flavor to wines (g/dm³)</li>
+                    <li><strong>Residual Sugar:</strong> Sugar remaining after fermentation (g/dm³)</li>
+                    <li><strong>Chlorides:</strong> Amount of salt in the wine (g/dm³)</li>
+                    <li><strong>Free Sulfur Dioxide:</strong> Prevents microbial growth (mg/dm³)</li>
+                    <li><strong>Total Sulfur Dioxide:</strong> Free and bound forms of SO2 (mg/dm³)</li>
+                    <li><strong>Density:</strong> Density of wine (g/cm³)</li>
+                    <li><strong>pH:</strong> Acidity or basicity scale 0-14</li>
+                    <li><strong>Sulphates:</strong> Wine additive for SO2 levels (g/dm³)</li>
+                    <li><strong>Alcohol:</strong> Percent alcohol content of wine</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictionForm');
+        const resultContainer = document.getElementById('resultContainer');
+        const qualityScore = document.getElementById('qualityScore');
+        const qualityLabel = document.getElementById('qualityLabel');
+        const qualityDescription = document.getElementById('qualityDescription');
+        const loading = document.getElementById('loading');
+
+        // Sample values for demonstration
+        const sampleValues = {
+            fixed_acidity: 7.4,
+            volatile_acidity: 0.70,
+            citric_acid: 0.00,
+            residual_sugar: 1.9,
+            chlorides: 0.076,
+            free_sulfur_dioxide: 11,
+            total_sulfur_dioxide: 34,
+            density: 0.9978,
+            pH: 3.51,
+            sulphates: 0.56,
+            alcohol: 9.4
+        };
+
+        // Fill sample values
+        function fillSampleValues() {
+            Object.keys(sampleValues).forEach(key => {
+                const input = document.getElementById(key);
+                if (input) input.value = sampleValues[key];
+            });
+        }
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading
+            loading.classList.add('show');
+            resultContainer.classList.remove('show');
+
+            // Collect form data
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = parseFloat(value);
+            });
+
+            try {
+                // Send prediction request
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify([data])
+                });
+
+                const result = await response.json();
+                
+                // Hide loading
+                loading.classList.remove('show');
+
+                // Display result
+                if (result.prediction) {
+                    const quality = parseFloat(result.prediction[0]).toFixed(1);
+                    qualityScore.textContent = quality;
+                    
+                    // Add quality description
+                    let description = '';
+                    if (quality >= 7) {
+                        description = '🌟 Excellent Wine Quality!';
+                    } else if (quality >= 6) {
+                        description = '👍 Good Wine Quality';
+                    } else if (quality >= 5) {
+                        description = '👌 Average Wine Quality';
+                    } else {
+                        description = '⚠️ Below Average Quality';
+                    }
+                    qualityDescription.textContent = description;
+                    
+                    resultContainer.classList.add('show');
+                } else {
+                    alert('Error: Could not get prediction');
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                alert('Error: ' + error.message);
+            }
+        });
+
+        // Reset form clears results
+        form.addEventListener('reset', () => {
+            resultContainer.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
