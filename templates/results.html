@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results | Wine Quality</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            max-width: 600px;
+            width: 100%;
+            padding: 50px;
+            text-align: center;
+            animation: slideIn 0.6s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .wine-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .result-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            padding: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .prediction-label {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .prediction-value {
+            font-size: 6em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .quality-description {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 25px 0;
+            padding: 15px 30px;
+            background: white;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .description-text {
+            color: #555;
+            line-height: 1.8;
+            margin: 20px 0;
+            font-size: 1.05em;
+        }
+
+        .btn-container {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.4);
+        }
+
+        .quality-excellent {
+            color: #10b981;
+        }
+
+        .quality-good {
+            color: #3b82f6;
+        }
+
+        .quality-average {
+            color: #f59e0b;
+        }
+
+        .quality-poor {
+            color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .prediction-value {
+                font-size: 4em;
+            }
+
+            .wine-icon {
+                font-size: 3.5em;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wine-icon">🍷</div>
+        <h1>Prediction Results</h1>
+
+        <div class="result-box">
+            <p class="prediction-label">Predicted Wine Quality Score</p>
+            <div class="prediction-value" id="predictionValue">{{ prediction }}</div>
+            <p class="quality-description" id="qualityDesc"></p>
+        </div>
+
+        <p class="description-text" id="detailDesc"></p>
+
+        <div class="btn-container">
+            <a href="/" class="btn btn-primary">🔮 Make Another Prediction</a>
+            <a href="/train" class="btn btn-secondary">🚀 Retrain Model</a>
+        </div>
+    </div>
+
+    <script>
+        // Get the prediction value
+        const predictionValue = parseFloat(document.getElementById('predictionValue').textContent);
+        const qualityDesc = document.getElementById('qualityDesc');
+        const detailDesc = document.getElementById('detailDesc');
+
+        // Determine quality level and set appropriate styling
+        if (predictionValue >= 7) {
+            qualityDesc.textContent = '🌟 Excellent Wine Quality!';
+            qualityDesc.className = 'quality-description quality-excellent';
+            detailDesc.textContent = 'This wine has exceptional characteristics. It demonstrates outstanding balance, complexity, and aging potential. Perfect for special occasions!';
+        } else if (predictionValue >= 6) {
+            qualityDesc.textContent = '👍 Good Wine Quality';
+            qualityDesc.className = 'quality-description quality-good';
+            detailDesc.textContent = 'This is a well-made wine with good characteristics. It shows nice balance and flavor profile. Suitable for most occasions and will be enjoyed by many.';
+        } else if (predictionValue >= 5) {
+            qualityDesc.textContent = '👌 Average Wine Quality';
+            qualityDesc.className = 'quality-description quality-average';
+            detailDesc.textContent = 'This wine has acceptable quality with standard characteristics. While not exceptional, it serves as a decent everyday wine option.';
+        } else {
+            qualityDesc.textContent = '⚠️ Below Average Quality';
+            qualityDesc.className = 'quality-description quality-poor';
+            detailDesc.textContent = 'This wine shows some deficiencies in its characteristics. It may have balance issues or undesirable flavor profiles. Consider reviewing the production process.';
+        }
+    </script>
+</body>
+</html>
