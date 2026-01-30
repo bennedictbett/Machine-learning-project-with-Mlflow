@@ -442,7 +442,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - GitHub: [@bennedictbett](https://github.com/bennedictbett)
 - Email: benedictbett08@gmail.com
 - DagsHub: [@bennedictbett](https://dagshub.com/bennedictbett)
-- LinkedIn: [Connect with me](https://linkedin.com/in/benedict-bett)
+- LinkedIn: [Connect with me](https://www.linkedin.com/in/benedict-bett-a9899038a/)
 
 ## 🙏 Acknowledgments
 
@@ -487,8 +487,6 @@ For support and questions:
 ---
 
 <div align="center">
-
-### ⭐ Star this repository if you found it helpful!
 
 **Made with ❤️ by Benedict Bett**
 
